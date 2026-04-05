@@ -269,13 +269,262 @@
   .justify-between { justify-content: space-between; }
   .mt-16 { margin-top: 16px; }
 
+  /* ===================== TABLET ===================== */
   @media (max-width: 900px) {
-    .sidebar { width: 60px; }
+    .sidebar { width: 64px; }
     .logo-text, .logo-sub, .nav-item span, .nav-section, .sidebar-footer .status-text { display: none; }
-    .main { margin-left: 60px; }
+    .logo { padding: 14px 10px; text-align: center; }
+    .nav { padding: 8px 6px; }
+    .nav-item { justify-content: center; padding: 10px 6px; }
+    .nav-icon { width: auto; }
+    .sidebar-footer { padding: 10px; justify-content: center; }
+    .main { margin-left: 64px; padding: 20px; }
     .stat-grid { grid-template-columns: repeat(2,1fr); }
     .sell-layout { grid-template-columns: 1fr; }
     .form-grid { grid-template-columns: 1fr; }
+    .stat-value { font-size: 20px; }
+  }
+
+  /* ===================== MOBILE ===================== */
+  @media (max-width: 600px) {
+    /* Sidebar → bottom nav */
+    .sidebar {
+      position: fixed; left: 0; right: 0; top: auto; bottom: 0;
+      width: 100%; height: 60px; flex-direction: row;
+      border-top: 1px solid rgba(255,255,255,0.15);
+      z-index: 200; overflow: hidden;
+    }
+    .logo { display: none; }
+    .sidebar-footer { display: none; }
+    .nav {
+      flex-direction: row; padding: 0; gap: 0;
+      width: 100%; justify-content: space-around; align-items: center;
+      overflow-x: auto; -webkit-overflow-scrolling: touch;
+    }
+    .nav-section { display: none; }
+    .nav-item {
+      flex-direction: column; gap: 2px; padding: 6px 4px;
+      min-width: 52px; font-size: 9px; border-radius: 6px;
+      justify-content: center; align-items: center; flex: 1;
+      white-space: nowrap;
+    }
+    .nav-item span { display: block !important; font-size: 9px; line-height: 1.2; text-align: center; }
+    .nav-icon { font-size: 18px; width: auto; }
+    .nav-item.active { background: rgba(255,255,255,0.2); }
+
+    /* Main content */
+    .main { margin-left: 0; padding: 12px 12px 72px 12px; min-height: 100vh; }
+
+    /* Page title */
+    .page-title { font-size: 17px; }
+    .page-subtitle { font-size: 11px; }
+    .topbar { flex-wrap: wrap; gap: 10px; margin-bottom: 14px; }
+    .topbar > div:last-child { width: 100%; }
+
+    /* Stat grid: 2 columns on mobile */
+    .stat-grid { grid-template-columns: repeat(2,1fr); gap: 8px; margin-bottom: 14px; }
+    .stat-card { padding: 12px 14px; border-radius: 12px; }
+    .stat-label { font-size: 10px; }
+    .stat-value { font-size: 18px; margin: 3px 0 1px; }
+    .stat-meta { font-size: 10px; }
+
+    /* Dashboard panels stacked */
+    #page-dashboard > div:last-child { grid-template-columns: 1fr !important; gap: 12px; }
+
+    /* Panel headers */
+    .panel-header { padding: 12px 14px; flex-wrap: wrap; gap: 8px; }
+    .panel-header .search-bar { width: 100% !important; }
+    .panel-title { font-size: 13px; }
+    .panel-body { padding: 12px; }
+
+    /* SELL PAGE — products then cart stacked */
+    .sell-layout { grid-template-columns: 1fr; gap: 12px; }
+    .cart-panel { position: static; }
+    .cart-items { min-height: 80px; max-height: 220px; }
+    .product-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .product-card { padding: 10px; }
+    .product-card-name { font-size: 12px; }
+    .product-card-price { font-size: 13px; }
+    .customer-section { padding: 10px 12px; }
+
+    /* BUY page */
+    #page-buy > div { max-width: 100%; }
+    .form-grid { grid-template-columns: 1fr; gap: 10px; }
+    .form-group.full { grid-column: 1; }
+
+    /* TABLE → CARD VIEW */
+    /* Hide regular table headers on mobile, show card style */
+    .mobile-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    table { min-width: 520px; }
+    th { font-size: 10px; padding: 8px 10px; }
+    td { font-size: 12px; padding: 9px 10px; }
+
+    /* Inventory table card view */
+    #inventory-table thead { display: none; }
+    #inventory-table tbody tr {
+      display: flex; flex-wrap: wrap; padding: 12px;
+      border-bottom: 1px solid var(--border); gap: 6px;
+    }
+    #inventory-table tbody tr:hover { background: var(--green-light); }
+    #inventory-table tbody td {
+      padding: 0; border: none; font-size: 12px;
+      display: flex; align-items: center;
+    }
+    #inventory-table tbody td:nth-child(1) { width: 100%; font-size: 14px; font-weight: 600; }
+    #inventory-table tbody td:nth-child(2) { flex: 1; }
+    #inventory-table tbody td:nth-child(3) { }
+    #inventory-table tbody td:nth-child(4) { color: var(--text-3); font-size: 11px; }
+    #inventory-table tbody td:nth-child(5)::before { content: 'ক্রয়: '; color: var(--text-3); font-size: 11px; }
+    #inventory-table tbody td:nth-child(5) { font-size: 11px; }
+    #inventory-table tbody td:nth-child(6)::before { content: 'বিক্রয়: '; color: var(--text-3); font-size: 11px; }
+    #inventory-table tbody td:nth-child(7) { }
+    #inventory-table tbody td:nth-child(8) { color: var(--amber); font-size: 11px; }
+    #inventory-table tbody td:nth-child(9) { width: 100%; justify-content: flex-end; margin-top: 4px; gap: 6px; }
+
+    /* Sales history card view */
+    #sales-tbody tr:not(.sale-row-detail) { display: flex; flex-wrap: wrap; padding: 12px; border-bottom: 1px solid var(--border); gap: 4px; }
+    #sales-tbody tr:not(.sale-row-detail) td { border: none; padding: 0; font-size: 12px; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 50%; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(2) { width: 50%; text-align: right; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(3) { font-size: 14px; font-weight: 600; width: 60%; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(4) { width: 40%; text-align: right; color: var(--text-3); font-size: 11px; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(5) { font-size: 11px; color: var(--text-3); width: 50%; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(6) { font-size: 15px; font-weight: 700; color: var(--green); width: 50%; text-align: right; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(7) { width: 100%; text-align: right; font-size: 11px; color: var(--text-3); }
+    #sales-tbody table thead { display: table-header-group; }
+    #sales-tbody table th, #sales-tbody table td { font-size: 11px; padding: 6px 8px; }
+
+    /* Cash book card view */
+    #cash-tbody tr { display: flex; flex-wrap: wrap; padding: 12px; border-bottom: 1px solid var(--border); gap: 4px; }
+    #cash-tbody td { border: none; padding: 0; font-size: 12px; display: flex; align-items: center; }
+    #cash-tbody td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 60%; }
+    #cash-tbody td:nth-child(3) { width: 40%; justify-content: flex-end; }
+    #cash-tbody td:nth-child(2) { font-size: 14px; font-weight: 500; width: 100%; }
+    #cash-tbody td:nth-child(4) { font-size: 16px; font-weight: 700; width: 60%; }
+    #cash-tbody td:nth-child(5) { color: var(--text-3); font-size: 11px; width: 100%; }
+    #cash-tbody td:nth-child(6) { width: 40%; justify-content: flex-end; }
+
+    /* Purchase table */
+    #purchase-tbody tr { display: flex; flex-wrap: wrap; padding: 10px; border-bottom: 1px solid var(--border); gap: 4px; }
+    #purchase-tbody td { border: none; padding: 0; font-size: 12px; }
+    #purchase-tbody td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 50%; }
+    #purchase-tbody td:nth-child(5) { width: 50%; text-align: right; font-size: 14px; font-weight: 700; color: var(--amber); }
+    #purchase-tbody td:nth-child(2) { font-size: 14px; font-weight: 600; width: 100%; }
+    #purchase-tbody td:nth-child(3) { font-size: 11px; color: var(--text-3); width: 33%; }
+    #purchase-tbody td:nth-child(4) { font-size: 11px; width: 33%; }
+    #purchase-tbody td:nth-child(6) { font-size: 11px; color: var(--text-3); width: 34%; }
+    #purchase-table thead { display: none; }
+
+    /* Cash stat grid */
+    .stat-grid[style*="grid-template-columns:repeat(3"] { grid-template-columns: repeat(3,1fr) !important; }
+
+    /* Filters */
+    #page-sales-history .topbar { flex-direction: column; align-items: flex-start; }
+    #page-sales-history .topbar > div:last-child { display: flex; gap: 8px; width: 100%; }
+    #page-sales-history .topbar input { flex: 1; font-size: 12px; padding: 7px 10px; }
+    #filter-date { max-width: 140px; }
+
+    /* Cash type tabs */
+    .cash-type-tabs { gap: 6px; }
+    .tab-btn { padding: 6px 14px; font-size: 12px; }
+
+    /* Toast */
+    .toast-container { left: 12px; right: 12px; bottom: 70px; }
+    .toast { max-width: 100%; }
+
+    /* Modal */
+    .modal { width: 100% !important; max-width: 100%; max-height: 95vh; border-radius: 20px 20px 0 0; position: fixed; bottom: 0; left: 0; right: 0; margin: 0; }
+    .modal-overlay { align-items: flex-end; }
+    .modal-header { padding: 16px 18px; }
+    .modal-body { padding: 16px 18px; }
+    .modal-footer { padding: 12px 18px; }
+
+    /* Topbar button */
+    .topbar .btn { font-size: 12px; padding: 7px 12px; }
+
+    /* Setup */
+    .setup-card { padding: 18px; }
+    .step-content p { font-size: 11px; }
+  }
+
+  /* Very small screens */
+  @media (max-width: 360px) {
+    .stat-grid { grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-value { font-size: 16px; }
+    .product-grid { grid-template-columns: 1fr 1fr; }
+    .main { padding: 10px 10px 72px 10px; }
+  }
+
+  /* Mobile table card overrides — hide table headers */
+  @media (max-width: 600px) {
+    .mobile-table-wrap table { min-width: unset; }
+    .mobile-table-wrap table thead { display: none; }
+    .mobile-table-wrap table tbody tr {
+      display: flex; flex-wrap: wrap; padding: 12px 14px;
+      border-bottom: 1px solid var(--border); gap: 6px;
+      background: var(--white);
+    }
+    .mobile-table-wrap table tbody tr:hover { background: var(--green-light); }
+    .mobile-table-wrap table tbody td {
+      display: inline-flex; align-items: center;
+      border: none; padding: 0; font-size: 12px;
+    }
+
+    /* Inventory cards */
+    #inventory-table tbody td:nth-child(1) { width: 100%; font-size: 14px; font-weight: 600; color: var(--text); }
+    #inventory-table tbody td:nth-child(2) { flex: none; }
+    #inventory-table tbody td:nth-child(3) { flex: none; margin-left: 4px; }
+    #inventory-table tbody td:nth-child(4) { font-size: 11px; color: var(--text-3); }
+    #inventory-table tbody td:nth-child(5) { font-size: 11px; color: var(--text-3); }
+    #inventory-table tbody td:nth-child(5)::before { content: 'ক্রয় '; }
+    #inventory-table tbody td:nth-child(6) { font-size: 12px; font-weight: 600; }
+    #inventory-table tbody td:nth-child(6)::before { content: 'বিক্রয় '; font-weight: 400; color: var(--text-3); }
+    #inventory-table tbody td:nth-child(7) { }
+    #inventory-table tbody td:nth-child(8) { font-size: 11px; color: var(--amber); margin-left: auto; }
+    #inventory-table tbody td:nth-child(9) { width: 100%; justify-content: flex-end; gap: 6px; margin-top: 2px; }
+
+    /* Sales history cards */
+    #sales-tbody tr { display: flex; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 4px; cursor: pointer; }
+    #sales-tbody tr:hover { background: var(--green-light); }
+    #sales-tbody tr td { display: inline-flex; border: none; padding: 0; font-size: 12px; align-items: center; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 50%; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(2) { width: 50%; justify-content: flex-end; font-size: 11px; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(3) { font-size: 15px; font-weight: 600; width: 55%; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(4) { width: 45%; justify-content: flex-end; color: var(--text-3); font-size: 11px; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(5) { font-size: 11px; color: var(--text-3); }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(6) { font-size: 16px; font-weight: 700; color: var(--green); margin-left: auto; }
+    #sales-tbody tr:not(.sale-row-detail) td:nth-child(7) { width: 100%; justify-content: flex-end; font-size: 11px; color: var(--text-3); }
+    #sales-tbody tr.sale-row-detail { display: table-row; }
+    #sales-tbody tr.sale-row-detail td { display: table-cell; padding: 0; }
+    #sales-tbody .sale-detail-inner table thead { display: table-header-group; }
+    #sales-tbody .sale-detail-inner table tbody tr { display: table-row; padding: 0; }
+    #sales-tbody .sale-detail-inner table tbody td { display: table-cell; padding: 6px 10px; font-size: 11px; }
+
+    /* Cashbook cards */
+    #cash-tbody tr { display: flex; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 4px; }
+    #cash-tbody tr td { display: inline-flex; border: none; padding: 0; font-size: 12px; align-items: center; }
+    #cash-tbody td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 55%; }
+    #cash-tbody td:nth-child(3) { width: 45%; justify-content: flex-end; }
+    #cash-tbody td:nth-child(2) { font-size: 14px; font-weight: 500; width: 100%; }
+    #cash-tbody td:nth-child(4) { font-size: 16px; font-weight: 700; flex: 1; }
+    #cash-tbody td:nth-child(5) { color: var(--text-3); font-size: 11px; width: 100%; }
+    #cash-tbody td:nth-child(6) { justify-content: flex-end; }
+
+    /* Purchase cards */
+    #purchase-tbody tr { display: flex; flex-wrap: wrap; padding: 12px 14px; border-bottom: 1px solid var(--border); gap: 4px; }
+    #purchase-tbody td { display: inline-flex; border: none; padding: 0; font-size: 12px; align-items: center; }
+    #purchase-tbody td:nth-child(1) { color: var(--text-3); font-size: 11px; width: 50%; }
+    #purchase-tbody td:nth-child(5) { width: 50%; justify-content: flex-end; font-size: 15px; font-weight: 700; color: var(--amber); }
+    #purchase-tbody td:nth-child(2) { font-size: 14px; font-weight: 600; width: 100%; }
+    #purchase-tbody td:nth-child(3) { font-size: 11px; color: var(--text-3); margin-right: 8px; }
+    #purchase-tbody td:nth-child(4) { font-size: 11px; }
+    #purchase-tbody td:nth-child(6) { font-size: 11px; color: var(--text-3); width: 100%; }
+
+    /* Cash stat — keep 3 cols but smaller */
+    .cash-stat-grid { grid-template-columns: repeat(3,1fr) !important; }
+    .cash-stat-grid .stat-card { padding: 10px 8px; }
+    .cash-stat-grid .stat-value { font-size: 14px; }
+    .cash-stat-grid .stat-label { font-size: 9px; }
   }
 </style>
 </head>
@@ -503,7 +752,7 @@
 
       <div class="panel" style="margin-top:20px">
         <div class="panel-header"><span class="panel-title">সাম্প্রতিক Purchase</span></div>
-        <div style="overflow-x:auto">
+        <div class="mobile-table-wrap">
           <table id="purchase-table">
             <thead><tr><th>তারিখ</th><th>পণ্য</th><th>পরিমাণ</th><th>ক্রয়মূল্য</th><th>মোট</th><th>সরবরাহকারী</th></tr></thead>
             <tbody id="purchase-tbody"></tbody>
@@ -527,7 +776,7 @@
           <input type="text" placeholder="পণ্য খুঁজুন..." oninput="filterInventory(this.value)">
         </div>
       </div>
-      <div style="overflow-x:auto">
+      <div class="mobile-table-wrap">
         <table id="inventory-table">
           <thead><tr><th>পণ্য</th><th>Category</th><th>Stock</th><th>Unit</th><th>ক্রয়মূল্য</th><th>বিক্রয়মূল্য</th><th>লাভ</th><th>মান</th><th>Action</th></tr></thead>
           <tbody id="inventory-tbody"></tbody>
@@ -546,7 +795,7 @@
       </div>
     </div>
     <div class="panel">
-      <div style="overflow-x:auto">
+      <div class="mobile-table-wrap">
         <table>
           <thead><tr><th>তারিখ</th><th>Invoice</th><th>কাস্টমার</th><th>ফোন</th><th>আইটেম</th><th>মোট</th><th>Details</th></tr></thead>
           <tbody id="sales-tbody"></tbody>
@@ -561,7 +810,7 @@
       <div><div class="page-title">Cash Book</div><div class="page-subtitle">আয় ও ব্যয়ের হিসাব</div></div>
       <button class="btn btn-primary" onclick="openCashModal()">+ এন্ট্রি যোগ</button>
     </div>
-    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+    <div class="stat-grid cash-stat-grid" style="grid-template-columns:repeat(3,1fr)">
       <div class="stat-card">
         <div class="stat-label">মোট আয়</div>
         <div class="stat-value mono" id="cash-income">৳০</div>
@@ -576,7 +825,7 @@
       </div>
     </div>
     <div class="panel">
-      <div style="overflow-x:auto">
+      <div class="mobile-table-wrap">
         <table>
           <thead><tr><th>তারিখ</th><th>বিবরণ</th><th>ধরন</th><th>পরিমাণ</th><th>Source</th><th>Action</th></tr></thead>
           <tbody id="cash-tbody"></tbody>
