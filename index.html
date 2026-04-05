@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgroTech — Business Manager</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #1a6b3a;
+    --green-light: #e8f5ee;
+    --green-mid: #2d8f52;
+    --amber: #c47d0e;
+    --amber-light: #fef3dc;
+    --red: #b33a2a;
+    --red-light: #fdecea;
+    --blue: #1a4fa3;
+    --blue-light: #e8effe;
+    --text: #1a1f16;
+    --text-2: #4a5240;
+    --text-3: #8a9180;
+    --border: #d4dbc8;
+    --surface: #f7f9f4;
+    --white: #ffffff;
+    --shadow: 0 2px 12px rgba(26,107,58,0.08);
+    --radius: 10px;
+    --radius-lg: 16px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Sora', sans-serif;
+    background: var(--surface);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+  /* SIDEBAR */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    width: 220px; background: var(--green);
+    display: flex; flex-direction: column;
+    z-index: 100; padding: 0;
+  }
+  .logo {
+    padding: 20px 20px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
+  }
+  .logo-text { color: #fff; font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .logo-sub { color: rgba(255,255,255,0.55); font-size: 11px; margin-top: 2px; }
+  .nav { padding: 12px 10px; flex: 1; display: flex; flex-direction: column; gap: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 400;
+    cursor: pointer; transition: all 0.15s; border: none; background: none; width: 100%; text-align: left;
+  }
+  .nav-item:hover { background: rgba(255,255,255,0.1); color: #fff; }
+  .nav-item.active { background: rgba(255,255,255,0.18); color: #fff; font-weight: 500; }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; }
+  .nav-section { padding: 16px 12px 6px; font-size: 10px; color: rgba(255,255,255,0.35); letter-spacing: 0.08em; text-transform: uppercase; }
+  .sidebar-footer { padding: 16px; border-top: 1px solid rgba(255,255,255,0.12); }
+  .github-status { display: flex; align-items: center; gap: 8px; }
+  .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #ff6b6b; flex-shrink: 0; }
+  .status-dot.connected { background: #6bcb77; }
+  .status-text { font-size: 11px; color: rgba(255,255,255,0.5); }
+
+  /* MAIN */
+  .main { margin-left: 220px; min-height: 100vh; padding: 28px; }
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* TOP BAR */
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .page-title { font-size: 22px; font-weight: 600; color: var(--text); letter-spacing: -0.5px; }
+  .page-subtitle { font-size: 13px; color: var(--text-3); margin-top: 2px; }
+
+  /* CARDS */
+  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--border); padding: 18px 20px;
+    position: relative; overflow: hidden;
+  }
+  .stat-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: var(--green);
+  }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.red::before { background: var(--red); }
+  .stat-card.blue::before { background: var(--blue); }
+  .stat-label { font-size: 11px; color: var(--text-3); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; }
+  .stat-value { font-size: 26px; font-weight: 600; color: var(--text); margin: 6px 0 2px; font-family: 'DM Mono', monospace; }
+  .stat-meta { font-size: 11px; color: var(--text-3); }
+
+  /* PANEL */
+  .panel {
+    background: var(--white); border-radius: var(--radius-lg);
+    border: 1px solid var(--border); overflow: hidden;
+  }
+  .panel-header {
+    padding: 16px 20px; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .panel-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .panel-body { padding: 20px; }
+
+  /* BUTTONS */
+  .btn {
+    padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: none; transition: all 0.15s; font-family: 'Sora', sans-serif;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .btn-primary { background: var(--green); color: #fff; }
+  .btn-primary:hover { background: var(--green-mid); }
+  .btn-secondary { background: var(--surface); color: var(--text-2); border: 1px solid var(--border); }
+  .btn-secondary:hover { background: var(--green-light); border-color: var(--green); }
+  .btn-danger { background: var(--red-light); color: var(--red); border: 1px solid #f0c4bf; }
+  .btn-danger:hover { background: #fad5d0; }
+  .btn-sm { padding: 5px 10px; font-size: 12px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600;
+    color: var(--text-3); text-transform: uppercase; letter-spacing: 0.06em;
+    border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  td { padding: 12px 14px; border-bottom: 1px solid #f0f3ec; font-size: 13px; color: var(--text); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--green-light); }
+
+  /* FORM */
+  .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .form-group { display: flex; flex-direction: column; gap: 5px; }
+  .form-group.full { grid-column: 1/-1; }
+  label { font-size: 12px; font-weight: 500; color: var(--text-2); }
+  input, select, textarea {
+    padding: 9px 12px; border-radius: 8px; border: 1px solid var(--border);
+    font-size: 13px; color: var(--text); font-family: 'Sora', sans-serif;
+    background: var(--white); transition: border-color 0.15s; width: 100%;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(26,107,58,0.08);
+  }
+  textarea { resize: vertical; min-height: 70px; }
+
+  /* BADGE */
+  .badge {
+    padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 500; display: inline-block;
+  }
+  .badge-green { background: var(--green-light); color: var(--green); }
+  .badge-amber { background: var(--amber-light); color: var(--amber); }
+  .badge-red { background: var(--red-light); color: var(--red); }
+  .badge-blue { background: var(--blue-light); color: var(--blue); }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+    display: none; align-items: center; justify-content: center; z-index: 1000;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--white); border-radius: var(--radius-lg);
+    width: 560px; max-width: 95vw; max-height: 90vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  }
+  .modal-header {
+    padding: 20px 24px; border-bottom: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: var(--white);
+  }
+  .modal-title { font-size: 16px; font-weight: 600; }
+  .modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--text-3); line-height: 1; }
+  .modal-body { padding: 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--surface); }
+
+  /* SELL PAGE - CART */
+  .sell-layout { display: grid; grid-template-columns: 1fr 340px; gap: 20px; align-items: start; }
+  .cart-panel { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); position: sticky; top: 28px; }
+  .cart-header { padding: 16px 20px; border-bottom: 1px solid var(--border); background: var(--green); border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .cart-header .panel-title { color: #fff; }
+  .cart-items { padding: 12px; min-height: 200px; max-height: 300px; overflow-y: auto; }
+  .cart-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px; border-radius: 8px; margin-bottom: 6px; background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .cart-item-name { font-size: 13px; font-weight: 500; }
+  .cart-item-meta { font-size: 11px; color: var(--text-3); }
+  .cart-item-price { font-size: 13px; font-weight: 600; font-family: 'DM Mono'; color: var(--green); }
+  .qty-ctrl { display: flex; align-items: center; gap: 6px; }
+  .qty-btn { width: 24px; height: 24px; border-radius: 6px; border: 1px solid var(--border); background: var(--white); cursor: pointer; font-size: 14px; display: flex; align-items: center; justify-content: center; transition: all 0.1s; }
+  .qty-btn:hover { background: var(--green); color: #fff; border-color: var(--green); }
+  .qty-val { font-size: 13px; font-weight: 600; min-width: 20px; text-align: center; }
+  .cart-summary { padding: 16px 20px; border-top: 1px solid var(--border); }
+  .summary-row { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
+  .summary-total { display: flex; justify-content: space-between; font-size: 16px; font-weight: 600; color: var(--green); padding-top: 8px; border-top: 1px solid var(--border); margin-top: 4px; font-family: 'DM Mono'; }
+  .customer-section { padding: 16px 20px; border-top: 1px solid var(--border); }
+
+  /* SEARCH BAR */
+  .search-bar { position: relative; }
+  .search-bar input { padding-left: 36px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--text-3); font-size: 15px; }
+
+  /* PRODUCT GRID */
+  .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; margin-top: 16px; }
+  .product-card {
+    background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px; cursor: pointer; transition: all 0.15s;
+  }
+  .product-card:hover { border-color: var(--green); background: var(--green-light); transform: translateY(-1px); box-shadow: var(--shadow); }
+  .product-card.out-of-stock { opacity: 0.5; cursor: not-allowed; }
+  .product-card-name { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 4px; }
+  .product-card-stock { font-size: 11px; color: var(--text-3); }
+  .product-card-price { font-size: 15px; font-weight: 600; color: var(--green); font-family: 'DM Mono'; margin-top: 6px; }
+
+  /* TOAST */
+  .toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+  .toast {
+    padding: 12px 18px; border-radius: 10px; font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12); animation: slideIn 0.3s ease;
+    display: flex; align-items: center; gap: 8px; max-width: 300px;
+  }
+  .toast.success { background: var(--green); color: #fff; }
+  .toast.error { background: var(--red); color: #fff; }
+  .toast.info { background: var(--blue); color: #fff; }
+  @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* SETUP PAGE */
+  .setup-card { background: var(--white); border-radius: var(--radius-lg); border: 1px solid var(--border); padding: 28px; max-width: 560px; margin: 0 auto; }
+  .setup-step { display: flex; gap: 14px; margin-bottom: 20px; }
+  .step-num { width: 28px; height: 28px; border-radius: 50%; background: var(--green); color: #fff; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .step-content label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; }
+  .step-content p { font-size: 12px; color: var(--text-3); margin-bottom: 8px; }
+
+  /* CASH BOOK */
+  .cash-type-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+  .tab-btn { padding: 7px 16px; border-radius: 8px; border: 1px solid var(--border); font-size: 13px; font-weight: 500; cursor: pointer; background: var(--white); color: var(--text-2); transition: all 0.15s; font-family: 'Sora', sans-serif; }
+  .tab-btn.active-green { background: var(--green); color: #fff; border-color: var(--green); }
+  .tab-btn.active-red { background: var(--red); color: #fff; border-color: var(--red); }
+
+  /* EMPTY STATE */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--text-3); }
+  .empty-icon { font-size: 36px; margin-bottom: 10px; }
+  .empty-text { font-size: 14px; }
+
+  /* CONFIRM */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+    display: none; align-items: center; justify-content: center; z-index: 2000;
+  }
+  .confirm-overlay.open { display: flex; }
+  .confirm-box { background: var(--white); border-radius: var(--radius-lg); padding: 28px; max-width: 380px; width: 90%; text-align: center; }
+  .confirm-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .confirm-msg { font-size: 13px; color: var(--text-2); margin-bottom: 20px; }
+  .confirm-btns { display: flex; gap: 10px; justify-content: center; }
+
+  /* SELL HISTORY - EXPAND */
+  .sale-row-detail { display: none; background: var(--green-light); }
+  .sale-row-detail.open { display: table-row; }
+  .sale-detail-inner { padding: 14px 20px; }
+
+  .mono { font-family: 'DM Mono', monospace; }
+  .text-right { text-align: right; }
+  .divider { height: 1px; background: var(--border); margin: 16px 0; }
+  .flex { display: flex; }
+  .gap-8 { gap: 8px; }
+  .items-center { align-items: center; }
+  .justify-between { justify-content: space-between; }
+  .mt-16 { margin-top: 16px; }
+
+  @media (max-width: 900px) {
+    .sidebar { width: 60px; }
+    .logo-text, .logo-sub, .nav-item span, .nav-section, .sidebar-footer .status-text { display: none; }
+    .main { margin-left: 60px; }
+    .stat-grid { grid-template-columns: repeat(2,1fr); }
+    .sell-layout { grid-template-columns: 1fr; }
+    .form-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="logo">
+    <div class="logo-text">🌿 AgroTech</div>
+    <div class="logo-sub">Business Manager</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Main</div>
+    <button class="nav-item active" onclick="navigate('dashboard')">
+      <span class="nav-icon">📊</span><span>Dashboard</span>
+    </button>
+    <div class="nav-section">ব্যবসা</div>
+    <button class="nav-item" onclick="navigate('sell')">
+      <span class="nav-icon">🛒</span><span>বিক্রি করুন</span>
+    </button>
+    <button class="nav-item" onclick="navigate('buy')">
+      <span class="nav-icon">📦</span><span>পণ্য কিনুন</span>
+    </button>
+    <button class="nav-item" onclick="navigate('inventory')">
+      <span class="nav-icon">🗃️</span><span>Inventory</span>
+    </button>
+    <div class="nav-section">হিসাব</div>
+    <button class="nav-item" onclick="navigate('sales-history')">
+      <span class="nav-icon">📋</span><span>বিক্রির ইতিহাস</span>
+    </button>
+    <button class="nav-item" onclick="navigate('cashbook')">
+      <span class="nav-icon">💰</span><span>Cash Book</span>
+    </button>
+    <div class="nav-section">সেটিং</div>
+    <button class="nav-item" onclick="navigate('setup')">
+      <span class="nav-icon">⚙️</span><span>GitHub Setup</span>
+    </button>
+  </nav>
+  <div class="sidebar-footer">
+    <div class="github-status">
+      <div class="status-dot" id="statusDot"></div>
+      <span class="status-text" id="statusText">Not connected</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- DASHBOARD -->
+  <div class="page active" id="page-dashboard">
+    <div class="topbar">
+      <div>
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle" id="today-date"></div>
+      </div>
+      <button class="btn btn-secondary" onclick="syncData()">🔄 Sync</button>
+    </div>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-label">আজকের বিক্রি</div>
+        <div class="stat-value mono" id="dash-today-sales">৳০</div>
+        <div class="stat-meta" id="dash-today-count">০ টি লেনদেন</div>
+      </div>
+      <div class="stat-card amber">
+        <div class="stat-label">মোট বিক্রি</div>
+        <div class="stat-value mono" id="dash-total-sales">৳০</div>
+        <div class="stat-meta" id="dash-total-count">সর্বমোট</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">মোট পণ্য</div>
+        <div class="stat-value mono" id="dash-products">০</div>
+        <div class="stat-meta">Inventory তে</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">Stock কম</div>
+        <div class="stat-value mono" id="dash-low-stock">০</div>
+        <div class="stat-meta">পণ্যের stock কম</div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">সাম্প্রতিক বিক্রি</span></div>
+        <div id="recent-sales-list" style="min-height:100px"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">কম Stock পণ্য</span></div>
+        <div id="low-stock-list" style="min-height:100px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SELL PAGE -->
+  <div class="page" id="page-sell">
+    <div class="topbar">
+      <div><div class="page-title">বিক্রি করুন</div><div class="page-subtitle">পণ্য সিলেক্ট করুন, কাস্টমার যোগ করুন</div></div>
+    </div>
+    <div class="sell-layout">
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <span class="panel-title">পণ্য বাছুন</span>
+            <div class="search-bar" style="width:220px">
+              <span class="search-icon">🔍</span>
+              <input type="text" id="product-search" placeholder="পণ্য খুঁজুন..." oninput="filterProducts()">
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="product-grid" id="product-grid"></div>
+          </div>
+        </div>
+      </div>
+      <!-- CART -->
+      <div class="cart-panel">
+        <div class="cart-header"><div class="panel-title">🛒 কার্ট</div></div>
+        <div class="cart-items" id="cart-items">
+          <div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-text">কার্ট খালি</div></div>
+        </div>
+        <div class="customer-section">
+          <div class="form-group">
+            <label>কাস্টমারের নাম *</label>
+            <input type="text" id="customer-name" placeholder="নাম লিখুন...">
+          </div>
+          <div class="form-group" style="margin-top:10px">
+            <label>ফোন নম্বর</label>
+            <input type="text" id="customer-phone" placeholder="01XXXXXXXXX">
+          </div>
+          <div class="form-group" style="margin-top:10px">
+            <label>নোট (ঐচ্ছিক)</label>
+            <input type="text" id="sale-note" placeholder="বিশেষ নোট...">
+          </div>
+        </div>
+        <div class="cart-summary">
+          <div class="summary-row"><span>মোট আইটেম</span><span id="cart-item-count">০ টি</span></div>
+          <div class="summary-row"><span>Subtotal</span><span class="mono" id="cart-subtotal">৳০</span></div>
+          <div class="summary-total"><span>মোট</span><span id="cart-total">৳০</span></div>
+          <button class="btn btn-primary" style="width:100%;margin-top:14px;justify-content:center;padding:12px" onclick="completeSale()">✅ বিক্রি সম্পন্ন করুন</button>
+          <button class="btn btn-secondary" style="width:100%;margin-top:8px;justify-content:center" onclick="clearCart()">🗑️ কার্ট খালি করুন</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BUY / RESTOCK PAGE -->
+  <div class="page" id="page-buy">
+    <div class="topbar">
+      <div><div class="page-title">পণ্য কিনুন / Restock</div><div class="page-subtitle">নতুন পণ্য কিনলে এখানে যোগ করুন</div></div>
+    </div>
+    <div style="max-width:640px">
+      <div class="panel">
+        <div class="panel-header"><span class="panel-title">Purchase Entry</span></div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>পণ্য বাছুন *</label>
+              <select id="buy-product">
+                <option value="">— পণ্য সিলেক্ট করুন —</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>অথবা নতুন পণ্যের নাম</label>
+              <input type="text" id="buy-new-product" placeholder="নতুন পণ্যের নাম...">
+            </div>
+            <div class="form-group">
+              <label>Category</label>
+              <select id="buy-category">
+                <option value="incubator">Incubator Product</option>
+                <option value="seed">বীজ</option>
+                <option value="fertilizer">সার</option>
+                <option value="pesticide">কীটনাশক</option>
+                <option value="equipment">যন্ত্রপাতি</option>
+                <option value="other">অন্যান্য</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Unit (একক)</label>
+              <select id="buy-unit">
+                <option value="pcs">পিস</option>
+                <option value="kg">কেজি</option>
+                <option value="liter">লিটার</option>
+                <option value="bag">বস্তা</option>
+                <option value="box">বাক্স</option>
+                <option value="dozen">ডজন</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>ক্রয় পরিমাণ (Quantity) *</label>
+              <input type="number" id="buy-qty" placeholder="০" min="1">
+            </div>
+            <div class="form-group">
+              <label>ক্রয় মূল্য (প্রতি unit) ৳ *</label>
+              <input type="number" id="buy-cost-price" placeholder="০.০০" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>বিক্রয় মূল্য (প্রতি unit) ৳ *</label>
+              <input type="number" id="buy-sell-price" placeholder="০.০০" min="0" step="0.01">
+            </div>
+            <div class="form-group">
+              <label>কম Stock সতর্কতা (পরিমাণ)</label>
+              <input type="number" id="buy-low-stock" placeholder="৫" min="0" value="5">
+            </div>
+            <div class="form-group">
+              <label>সরবরাহকারী (Supplier)</label>
+              <input type="text" id="buy-supplier" placeholder="সরবরাহকারীর নাম...">
+            </div>
+            <div class="form-group">
+              <label>ক্রয়ের তারিখ</label>
+              <input type="date" id="buy-date">
+            </div>
+            <div class="form-group full">
+              <label>নোট</label>
+              <textarea id="buy-note" placeholder="বিশেষ কোনো তথ্য..."></textarea>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding:14px;background:var(--amber-light);border-radius:8px;border:1px solid #f0d49a">
+            <div style="font-size:12px;color:var(--amber);font-weight:600;margin-bottom:4px">মোট ক্রয় মূল্য</div>
+            <div class="mono" style="font-size:22px;font-weight:600;color:var(--amber)" id="buy-total-cost">৳০.০০</div>
+          </div>
+          <div style="margin-top:16px;display:flex;gap:10px">
+            <button class="btn btn-primary" onclick="savePurchase()">✅ Purchase সেভ করুন</button>
+            <button class="btn btn-secondary" onclick="clearBuyForm()">🔄 ফর্ম রিসেট</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:20px">
+        <div class="panel-header"><span class="panel-title">সাম্প্রতিক Purchase</span></div>
+        <div style="overflow-x:auto">
+          <table id="purchase-table">
+            <thead><tr><th>তারিখ</th><th>পণ্য</th><th>পরিমাণ</th><th>ক্রয়মূল্য</th><th>মোট</th><th>সরবরাহকারী</th></tr></thead>
+            <tbody id="purchase-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVENTORY -->
+  <div class="page" id="page-inventory">
+    <div class="topbar">
+      <div><div class="page-title">Inventory</div><div class="page-subtitle">সব পণ্যের Stock</div></div>
+      <button class="btn btn-primary" onclick="openAddProductModal()">+ নতুন পণ্য যোগ</button>
+    </div>
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">পণ্যের তালিকা</span>
+        <div class="search-bar" style="width:240px">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="পণ্য খুঁজুন..." oninput="filterInventory(this.value)">
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="inventory-table">
+          <thead><tr><th>পণ্য</th><th>Category</th><th>Stock</th><th>Unit</th><th>ক্রয়মূল্য</th><th>বিক্রয়মূল্য</th><th>লাভ</th><th>মান</th><th>Action</th></tr></thead>
+          <tbody id="inventory-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SALES HISTORY -->
+  <div class="page" id="page-sales-history">
+    <div class="topbar">
+      <div><div class="page-title">বিক্রির ইতিহাস</div><div class="page-subtitle">সব Sales রেকর্ড</div></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <input type="date" id="filter-date" onchange="filterSales()" style="width:160px">
+        <input type="text" id="filter-customer" placeholder="কাস্টমার খুঁজুন..." oninput="filterSales()" style="width:180px">
+      </div>
+    </div>
+    <div class="panel">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>তারিখ</th><th>Invoice</th><th>কাস্টমার</th><th>ফোন</th><th>আইটেম</th><th>মোট</th><th>Details</th></tr></thead>
+          <tbody id="sales-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- CASH BOOK -->
+  <div class="page" id="page-cashbook">
+    <div class="topbar">
+      <div><div class="page-title">Cash Book</div><div class="page-subtitle">আয় ও ব্যয়ের হিসাব</div></div>
+      <button class="btn btn-primary" onclick="openCashModal()">+ এন্ট্রি যোগ</button>
+    </div>
+    <div class="stat-grid" style="grid-template-columns:repeat(3,1fr)">
+      <div class="stat-card">
+        <div class="stat-label">মোট আয়</div>
+        <div class="stat-value mono" id="cash-income">৳০</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-label">মোট ব্যয়</div>
+        <div class="stat-value mono" id="cash-expense">৳০</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="stat-label">নিট ব্যালেন্স</div>
+        <div class="stat-value mono" id="cash-balance">৳০</div>
+      </div>
+    </div>
+    <div class="panel">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>তারিখ</th><th>বিবরণ</th><th>ধরন</th><th>পরিমাণ</th><th>Source</th><th>Action</th></tr></thead>
+          <tbody id="cash-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="page" id="page-setup">
+    <div class="topbar"><div><div class="page-title">GitHub Setup</div><div class="page-subtitle">একবার সেটআপ করুন, সারাজীবন ব্যবহার করুন</div></div></div>
+    <div class="setup-card">
+      <div style="background:var(--green-light);border-radius:10px;padding:14px 18px;margin-bottom:24px;border:1px solid #b8ddc8">
+        <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">কিভাবে কাজ করে?</div>
+        <div style="font-size:12px;color:var(--text-2);line-height:1.6">আপনার GitHub repository-তে JSON file হিসেবে সব data সেভ হবে। প্রতিটি এন্ট্রি একটি Git commit — তাই কোনো data হারাবে না।</div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">১</div>
+        <div class="step-content" style="flex:1">
+          <label>GitHub Username</label>
+          <p>আপনার GitHub account-এর username</p>
+          <input type="text" id="cfg-username" placeholder="your-github-username">
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">২</div>
+        <div class="step-content" style="flex:1">
+          <label>Repository Name</label>
+          <p>যে repo-তে data রাখবেন (আগে GitHub-এ তৈরি করুন, public করুন)</p>
+          <input type="text" id="cfg-repo" placeholder="agrotech-data">
+        </div>
+      </div>
+      <div class="setup-step">
+        <div class="step-num">৩</div>
+        <div class="step-content" style="flex:1">
+          <label>Personal Access Token</label>
+          <p>GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → <strong>repo</strong> permission দিন</p>
+          <input type="password" id="cfg-token" placeholder="github_pat_...">
+        </div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px" onclick="saveConfig()">✅ সংযোগ করুন ও ডেটা Initialize করুন</button>
+      <div id="setup-status" style="margin-top:14px;font-size:13px;text-align:center"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<!-- Add Product Modal -->
+<div class="modal-overlay" id="modal-product">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">নতুন পণ্য যোগ করুন</span>
+      <button class="modal-close" onclick="closeModal('modal-product')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-group"><label>পণ্যের নাম *</label><input type="text" id="mp-name" placeholder="পণ্যের নাম"></div>
+        <div class="form-group"><label>Category</label>
+          <select id="mp-category">
+            <option value="incubator">Incubator Product</option>
+            <option value="seed">বীজ</option>
+            <option value="fertilizer">সার</option>
+            <option value="pesticide">কীটনাশক</option>
+            <option value="equipment">যন্ত্রপাতি</option>
+            <option value="other">অন্যান্য</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Stock পরিমাণ *</label><input type="number" id="mp-stock" placeholder="০" min="0"></div>
+        <div class="form-group"><label>Unit</label>
+          <select id="mp-unit">
+            <option value="pcs">পিস</option><option value="kg">কেজি</option>
+            <option value="liter">লিটার</option><option value="bag">বস্তা</option>
+            <option value="box">বাক্স</option><option value="dozen">ডজন</option>
+          </select>
+        </div>
+        <div class="form-group"><label>ক্রয়মূল্য ৳</label><input type="number" id="mp-cost" placeholder="০.০০" step="0.01" min="0"></div>
+        <div class="form-group"><label>বিক্রয়মূল্য ৳ *</label><input type="number" id="mp-price" placeholder="০.০০" step="0.01" min="0"></div>
+        <div class="form-group"><label>কম Stock সতর্কতা</label><input type="number" id="mp-lowstock" placeholder="৫" value="5" min="0"></div>
+        <div class="form-group"><label>বিবরণ</label><input type="text" id="mp-desc" placeholder="পণ্যের বিবরণ..."></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-product')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveProduct()">✅ সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- Cash Modal -->
+<div class="modal-overlay" id="modal-cash">
+  <div class="modal" style="width:440px">
+    <div class="modal-header">
+      <span class="modal-title">Cash Entry</span>
+      <button class="modal-close" onclick="closeModal('modal-cash')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="cash-type-tabs">
+        <button class="tab-btn active-green" id="tab-income" onclick="setCashType('income')">⬆ আয়</button>
+        <button class="tab-btn" id="tab-expense" onclick="setCashType('expense')">⬇ ব্যয়</button>
+      </div>
+      <div class="form-grid" style="grid-template-columns:1fr">
+        <div class="form-group"><label>বিবরণ *</label><input type="text" id="cash-desc" placeholder="কিসের আয়/ব্যয়?"></div>
+        <div class="form-group"><label>পরিমাণ ৳ *</label><input type="number" id="cash-amount" placeholder="০.০০" min="0" step="0.01"></div>
+        <div class="form-group"><label>Source / Category</label><input type="text" id="cash-source" placeholder="যেমন: বিক্রি, বেতন, ভাড়া..."></div>
+        <div class="form-group"><label>তারিখ</label><input type="date" id="cash-date"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-cash')">বাতিল</button>
+      <button class="btn btn-primary" onclick="saveCashEntry()">✅ সেভ করুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- Confirm Dialog -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">নিশ্চিত করুন</div>
+    <div class="confirm-msg" id="confirm-msg">আপনি কি নিশ্চিত?</div>
+    <div class="confirm-btns">
+      <button class="btn btn-secondary" onclick="closeConfirm()">না</button>
+      <button class="btn btn-danger" id="confirm-yes">হ্যাঁ, মুছুন</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+// ============================================================
+// DATA STORE
+// ============================================================
+let DB = {
+  inventory: [],
+  sales: [],
+  purchases: [],
+  cashbook: []
+};
+
+let CONFIG = { username: '', repo: '', token: '' };
+let cart = [];
+let cashType = 'income';
+let editProductId = null;
+
+// ============================================================
+// GITHUB API
+// ============================================================
+const GITHUB_API = 'https://api.github.com';
+
+async function githubGet(path) {
+  const r = await fetch(`${GITHUB_API}/repos/${CONFIG.username}/${CONFIG.repo}/contents/${path}`, {
+    headers: { Authorization: `token ${CONFIG.token}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!r.ok) throw new Error('GitHub GET failed: ' + r.status);
+  return r.json();
+}
+
+async function githubPut(path, content, sha) {
+  const body = { message: `AgroTech update: ${path}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))) };
+  if (sha) body.sha = sha;
+  const r = await fetch(`${GITHUB_API}/repos/${CONFIG.username}/${CONFIG.repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: { Authorization: `token ${CONFIG.token}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!r.ok) throw new Error('GitHub PUT failed: ' + r.status);
+  return r.json();
+}
+
+async function loadFromGitHub() {
+  if (!CONFIG.token) return;
+  try {
+    const files = ['inventory.json','sales.json','purchases.json','cashbook.json'];
+    for (const f of files) {
+      try {
+        const res = await githubGet(`data/${f}`);
+        const key = f.replace('.json','');
+        DB[key] = JSON.parse(decodeURIComponent(escape(atob(res.content))));
+      } catch(e) { /* file doesn't exist yet, use empty */ }
+    }
+    updateStatus(true);
+    refreshAllViews();
+    toast('Data sync হয়েছে ✓', 'success');
+  } catch(e) {
+    updateStatus(false);
+    toast('Sync ব্যর্থ: ' + e.message, 'error');
+  }
+}
+
+async function saveToGitHub(key) {
+  if (!CONFIG.token) { saveLocal(); return; }
+  try {
+    let sha;
+    try { const res = await githubGet(`data/${key}.json`); sha = res.sha; } catch(e) {}
+    await githubPut(`data/${key}.json`, DB[key], sha);
+  } catch(e) {
+    toast('Save ব্যর্থ, local এ সেভ হচ্ছে', 'error');
+  }
+  saveLocal();
+}
+
+async function initializeRepo() {
+  const files = { 'inventory.json': [], 'sales.json': [], 'purchases.json': [], 'cashbook.json': [] };
+  for (const [f, data] of Object.entries(files)) {
+    try {
+      let sha;
+      try { const res = await githubGet(`data/${f}`); sha = res.sha; } catch(e) {}
+      if (!sha) await githubPut(`data/${f}`, data, null);
+    } catch(e) {}
+  }
+}
+
+// ============================================================
+// LOCAL STORAGE FALLBACK
+// ============================================================
+function saveLocal() {
+  localStorage.setItem('agrotech_db', JSON.stringify(DB));
+}
+
+function loadLocal() {
+  const saved = localStorage.getItem('agrotech_db');
+  if (saved) { try { DB = JSON.parse(saved); } catch(e) {} }
+  const cfg = localStorage.getItem('agrotech_cfg');
+  if (cfg) { try { CONFIG = JSON.parse(cfg); } catch(e) {} }
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  event.currentTarget.classList.add('active');
+  if (page === 'dashboard') renderDashboard();
+  if (page === 'sell') renderProductGrid();
+  if (page === 'inventory') renderInventory();
+  if (page === 'sales-history') renderSalesHistory();
+  if (page === 'cashbook') renderCashBook();
+  if (page === 'buy') { renderBuyPage(); updateBuyCost(); }
+}
+
+// ============================================================
+// DASHBOARD
+// ============================================================
+function renderDashboard() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('today-date').textContent = new Date().toLocaleDateString('bn-BD', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+  const todaySales = DB.sales.filter(s => s.date && s.date.startsWith(today));
+  const todayTotal = todaySales.reduce((a,s) => a + (s.total||0), 0);
+  const totalAll = DB.sales.reduce((a,s) => a + (s.total||0), 0);
+  const lowStock = DB.inventory.filter(p => p.stock <= (p.lowStockAlert||5));
+  document.getElementById('dash-today-sales').textContent = '৳' + fmt(todayTotal);
+  document.getElementById('dash-today-count').textContent = todaySales.length + ' টি লেনদেন';
+  document.getElementById('dash-total-sales').textContent = '৳' + fmt(totalAll);
+  document.getElementById('dash-total-count').textContent = DB.sales.length + ' টি মোট';
+  document.getElementById('dash-products').textContent = DB.inventory.length;
+  document.getElementById('dash-low-stock').textContent = lowStock.length;
+
+  const recentEl = document.getElementById('recent-sales-list');
+  const recent = [...DB.sales].reverse().slice(0,5);
+  if (recent.length === 0) { recentEl.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">কোনো বিক্রি নেই</div></div>'; }
+  else recentEl.innerHTML = recent.map(s => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:13px;font-weight:500">${s.customer}</div><div style="font-size:11px;color:var(--text-3)">${s.items.length} আইটেম · ${formatDate(s.date)}</div></div>
+      <div class="mono" style="font-weight:600;color:var(--green)">৳${fmt(s.total)}</div>
+    </div>`).join('');
+
+  const lowEl = document.getElementById('low-stock-list');
+  if (lowStock.length === 0) { lowEl.innerHTML = '<div class="empty-state"><div class="empty-icon">✅</div><div class="empty-text">সব পণ্যে পর্যাপ্ত stock</div></div>'; }
+  else lowEl.innerHTML = lowStock.map(p => `
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;border-bottom:1px solid var(--border)">
+      <div><div style="font-size:13px;font-weight:500">${p.name}</div><div style="font-size:11px;color:var(--text-3)">${catLabel(p.category)}</div></div>
+      <span class="badge badge-red">${p.stock} ${p.unit||'পিস'} বাকি</span>
+    </div>`).join('');
+}
+
+// ============================================================
+// SELL
+// ============================================================
+function renderProductGrid() {
+  const q = document.getElementById('product-search').value.toLowerCase();
+  const grid = document.getElementById('product-grid');
+  const products = DB.inventory.filter(p => !q || p.name.toLowerCase().includes(q));
+  if (products.length === 0) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">📦</div><div class="empty-text">কোনো পণ্য নেই। আগে Inventory তে পণ্য যোগ করুন।</div></div>'; return; }
+  grid.innerHTML = products.map(p => {
+    const oos = p.stock <= 0;
+    return `<div class="product-card ${oos ? 'out-of-stock' : ''}" onclick="${oos ? '' : `addToCart('${p.id}')`}">
+      <div class="product-card-name">${p.name}</div>
+      <div class="product-card-stock">${catLabel(p.category)} · ${p.stock} ${p.unit||'পিস'}</div>
+      <div class="product-card-price">৳${fmt(p.price)}</div>
+      ${oos ? '<div style="font-size:11px;color:var(--red);margin-top:4px">Stock শেষ</div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function filterProducts() { renderProductGrid(); }
+
+function addToCart(id) {
+  const p = DB.inventory.find(x => x.id === id);
+  if (!p || p.stock <= 0) return;
+  const existing = cart.find(c => c.id === id);
+  if (existing) {
+    if (existing.qty >= p.stock) { toast('Stock এর বেশি যোগ করা যাবে না', 'error'); return; }
+    existing.qty++;
+  } else { cart.push({ id, name: p.name, price: p.price, qty: 1, unit: p.unit }); }
+  renderCart();
+  toast(p.name + ' কার্টে যোগ হয়েছে', 'success');
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(c => c.id === id);
+  const p = DB.inventory.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) cart = cart.filter(c => c.id !== id);
+  if (p && item.qty > p.stock) { item.qty = p.stock; toast('Stock এর বেশি যোগ করা যাবে না', 'error'); }
+  renderCart();
+}
+
+function renderCart() {
+  const el = document.getElementById('cart-items');
+  if (cart.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-icon">🛒</div><div class="empty-text">কার্ট খালি</div></div>'; }
+  else el.innerHTML = cart.map(c => `
+    <div class="cart-item">
+      <div style="flex:1">
+        <div class="cart-item-name">${c.name}</div>
+        <div class="cart-item-meta">৳${fmt(c.price)} × ${c.qty} = <strong>৳${fmt(c.price * c.qty)}</strong></div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('${c.id}',-1)">−</button>
+        <span class="qty-val">${c.qty}</span>
+        <button class="qty-btn" onclick="changeQty('${c.id}',1)">+</button>
+      </div>
+    </div>`).join('');
+  const total = cart.reduce((a,c) => a + c.price * c.qty, 0);
+  const count = cart.reduce((a,c) => a + c.qty, 0);
+  document.getElementById('cart-item-count').textContent = count + ' টি';
+  document.getElementById('cart-subtotal').textContent = '৳' + fmt(total);
+  document.getElementById('cart-total').textContent = '৳' + fmt(total);
+}
+
+function clearCart() { cart = []; renderCart(); }
+
+async function completeSale() {
+  const customer = document.getElementById('customer-name').value.trim();
+  if (!customer) { toast('কাস্টমারের নাম দিন', 'error'); return; }
+  if (cart.length === 0) { toast('কার্টে কোনো পণ্য নেই', 'error'); return; }
+
+  const total = cart.reduce((a,c) => a + c.price * c.qty, 0);
+  const sale = {
+    id: 'SALE-' + Date.now(),
+    invoice: 'INV-' + String(DB.sales.length + 1).padStart(4, '0'),
+    customer, phone: document.getElementById('customer-phone').value,
+    note: document.getElementById('sale-note').value,
+    items: cart.map(c => ({ id: c.id, name: c.name, qty: c.qty, price: c.price, total: c.price * c.qty, unit: c.unit })),
+    total, date: new Date().toISOString()
+  };
+
+  // Deduct stock
+  for (const c of cart) {
+    const p = DB.inventory.find(x => x.id === c.id);
+    if (p) p.stock -= c.qty;
+  }
+
+  DB.sales.push(sale);
+
+  // Auto cash entry
+  DB.cashbook.push({ id: 'CASH-' + Date.now(), type: 'income', desc: `বিক্রি: ${customer}`, amount: total, source: 'বিক্রি', date: new Date().toISOString(), ref: sale.invoice });
+
+  await saveToGitHub('sales');
+  await saveToGitHub('inventory');
+  await saveToGitHub('cashbook');
+
+  cart = [];
+  document.getElementById('customer-name').value = '';
+  document.getElementById('customer-phone').value = '';
+  document.getElementById('sale-note').value = '';
+  renderCart();
+  renderProductGrid();
+  toast(`✅ বিক্রি সম্পন্ন! ${sale.invoice} — ৳${fmt(total)}`, 'success');
+}
+
+// ============================================================
+// BUY / PURCHASE
+// ============================================================
+function renderBuyPage() {
+  const sel = document.getElementById('buy-product');
+  sel.innerHTML = '<option value="">— পণ্য সিলেক্ট করুন —</option>' + DB.inventory.map(p => `<option value="${p.id}">${p.name} (Stock: ${p.stock})</option>`).join('');
+  document.getElementById('buy-date').value = new Date().toISOString().split('T')[0];
+  renderPurchaseTable();
+}
+
+function updateBuyCost() {
+  const qty = parseFloat(document.getElementById('buy-qty').value) || 0;
+  const cost = parseFloat(document.getElementById('buy-cost-price').value) || 0;
+  document.getElementById('buy-total-cost').textContent = '৳' + fmt(qty * cost);
+}
+
+document.addEventListener('input', e => { if (['buy-qty','buy-cost-price'].includes(e.target.id)) updateBuyCost(); });
+
+async function savePurchase() {
+  const existingId = document.getElementById('buy-product').value;
+  const newName = document.getElementById('buy-new-product').value.trim();
+  const qty = parseInt(document.getElementById('buy-qty').value);
+  const costPrice = parseFloat(document.getElementById('buy-cost-price').value);
+  const sellPrice = parseFloat(document.getElementById('buy-sell-price').value);
+  const unit = document.getElementById('buy-unit').value;
+  const category = document.getElementById('buy-category').value;
+  const lowStock = parseInt(document.getElementById('buy-low-stock').value) || 5;
+  const supplier = document.getElementById('buy-supplier').value;
+  const date = document.getElementById('buy-date').value || new Date().toISOString().split('T')[0];
+  const note = document.getElementById('buy-note').value;
+
+  if (!qty || !costPrice) { toast('পরিমাণ ও ক্রয়মূল্য দিন', 'error'); return; }
+  if (!existingId && !newName) { toast('পণ্য বাছুন অথবা নতুন নাম দিন', 'error'); return; }
+
+  let product;
+  if (existingId) {
+    product = DB.inventory.find(p => p.id === existingId);
+    product.stock += qty;
+    if (sellPrice) product.price = sellPrice;
+    product.costPrice = costPrice;
+  } else {
+    if (!sellPrice) { toast('বিক্রয়মূল্য দিন', 'error'); return; }
+    product = { id: 'PRD-' + Date.now(), name: newName, category, unit, stock: qty, price: sellPrice, costPrice, lowStockAlert: lowStock, desc: '' };
+    DB.inventory.push(product);
+  }
+
+  const purchase = { id: 'PUR-' + Date.now(), productId: product.id, productName: product.name, qty, costPrice, total: qty * costPrice, sellPrice, supplier, date, note };
+  DB.purchases.push(purchase);
+
+  DB.cashbook.push({ id: 'CASH-' + Date.now(), type: 'expense', desc: `ক্রয়: ${product.name}`, amount: qty * costPrice, source: 'ক্রয়', date: new Date().toISOString() });
+
+  await saveToGitHub('inventory');
+  await saveToGitHub('purchases');
+  await saveToGitHub('cashbook');
+
+  clearBuyForm();
+  renderBuyPage();
+  toast('✅ Purchase সেভ হয়েছে', 'success');
+}
+
+function clearBuyForm() {
+  ['buy-product','buy-category','buy-unit'].forEach(id => document.getElementById(id).selectedIndex = 0);
+  ['buy-new-product','buy-qty','buy-cost-price','buy-sell-price','buy-supplier','buy-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('buy-low-stock').value = '5';
+  document.getElementById('buy-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('buy-total-cost').textContent = '৳০.০০';
+}
+
+function renderPurchaseTable() {
+  const tbody = document.getElementById('purchase-tbody');
+  const recent = [...DB.purchases].reverse().slice(0, 20);
+  if (recent.length === 0) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state">কোনো purchase নেই</td></tr>'; return; }
+  tbody.innerHTML = recent.map(p => `
+    <tr>
+      <td>${formatDate(p.date)}</td>
+      <td style="font-weight:500">${p.productName}</td>
+      <td>${p.qty} ${DB.inventory.find(x=>x.id===p.productId)?.unit||'পিস'}</td>
+      <td class="mono">৳${fmt(p.costPrice)}</td>
+      <td class="mono" style="font-weight:600;color:var(--amber)">৳${fmt(p.total)}</td>
+      <td style="color:var(--text-3)">${p.supplier||'—'}</td>
+    </tr>`).join('');
+}
+
+// ============================================================
+// INVENTORY
+// ============================================================
+function renderInventory(filter = '') {
+  const tbody = document.getElementById('inventory-tbody');
+  const items = DB.inventory.filter(p => !filter || p.name.toLowerCase().includes(filter.toLowerCase()));
+  if (items.length === 0) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><div class="empty-icon">📦</div><div class="empty-text">কোনো পণ্য নেই</div></div></td></tr>'; return; }
+  tbody.innerHTML = items.map(p => {
+    const profit = ((p.price - (p.costPrice||0)) / (p.costPrice||1) * 100).toFixed(1);
+    const stockBadge = p.stock <= 0 ? 'badge-red' : p.stock <= (p.lowStockAlert||5) ? 'badge-amber' : 'badge-green';
+    return `<tr>
+      <td style="font-weight:500">${p.name}</td>
+      <td><span class="badge badge-blue">${catLabel(p.category)}</span></td>
+      <td><span class="badge ${stockBadge}">${p.stock}</span></td>
+      <td style="color:var(--text-3)">${p.unit||'পিস'}</td>
+      <td class="mono">৳${fmt(p.costPrice||0)}</td>
+      <td class="mono" style="font-weight:600">৳${fmt(p.price)}</td>
+      <td><span class="badge ${parseFloat(profit)>=0?'badge-green':'badge-red'}">${profit}%</span></td>
+      <td class="mono" style="color:var(--amber)">৳${fmt((p.costPrice||0)*p.stock)}</td>
+      <td>
+        <button class="btn btn-secondary btn-sm" onclick="editProduct('${p.id}')">✏️</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteProduct('${p.id}')">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filterInventory(q) { renderInventory(q); }
+
+function openAddProductModal() {
+  editProductId = null;
+  ['mp-name','mp-stock','mp-cost','mp-price','mp-desc'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('mp-lowstock').value = '5';
+  document.querySelector('#modal-product .modal-title').textContent = 'নতুন পণ্য যোগ করুন';
+  openModal('modal-product');
+}
+
+function editProduct(id) {
+  const p = DB.inventory.find(x => x.id === id);
+  if (!p) return;
+  editProductId = id;
+  document.getElementById('mp-name').value = p.name;
+  document.getElementById('mp-category').value = p.category || 'other';
+  document.getElementById('mp-stock').value = p.stock;
+  document.getElementById('mp-unit').value = p.unit || 'pcs';
+  document.getElementById('mp-cost').value = p.costPrice || 0;
+  document.getElementById('mp-price').value = p.price;
+  document.getElementById('mp-lowstock').value = p.lowStockAlert || 5;
+  document.getElementById('mp-desc').value = p.desc || '';
+  document.querySelector('#modal-product .modal-title').textContent = 'পণ্য সম্পাদনা';
+  openModal('modal-product');
+}
+
+async function saveProduct() {
+  const name = document.getElementById('mp-name').value.trim();
+  const price = parseFloat(document.getElementById('mp-price').value);
+  const stock = parseInt(document.getElementById('mp-stock').value);
+  if (!name || isNaN(price) || isNaN(stock)) { toast('নাম, stock ও বিক্রয়মূল্য দিন', 'error'); return; }
+  const data = { name, category: document.getElementById('mp-category').value, stock, unit: document.getElementById('mp-unit').value, costPrice: parseFloat(document.getElementById('mp-cost').value)||0, price, lowStockAlert: parseInt(document.getElementById('mp-lowstock').value)||5, desc: document.getElementById('mp-desc').value };
+  if (editProductId) { Object.assign(DB.inventory.find(p => p.id === editProductId), data); }
+  else DB.inventory.push({ id: 'PRD-' + Date.now(), ...data });
+  await saveToGitHub('inventory');
+  closeModal('modal-product');
+  renderInventory();
+  toast('✅ পণ্য সেভ হয়েছে', 'success');
+}
+
+function deleteProduct(id) {
+  showConfirm('পণ্য মুছে ফেলুন', 'এই পণ্যটি মুছে ফেলা হবে। নিশ্চিত?', async () => {
+    DB.inventory = DB.inventory.filter(p => p.id !== id);
+    await saveToGitHub('inventory');
+    renderInventory();
+    toast('পণ্য মুছে ফেলা হয়েছে', 'info');
+  });
+}
+
+// ============================================================
+// SALES HISTORY
+// ============================================================
+function renderSalesHistory() {
+  const tbody = document.getElementById('sales-tbody');
+  const dateFilter = document.getElementById('filter-date').value;
+  const custFilter = document.getElementById('filter-customer').value.toLowerCase();
+  let sales = [...DB.sales].reverse();
+  if (dateFilter) sales = sales.filter(s => s.date && s.date.startsWith(dateFilter));
+  if (custFilter) sales = sales.filter(s => s.customer.toLowerCase().includes(custFilter));
+  if (sales.length === 0) { tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">কোনো বিক্রি নেই</div></div></td></tr>'; return; }
+  tbody.innerHTML = sales.map(s => `
+    <tr onclick="toggleSaleDetail('${s.id}')" style="cursor:pointer">
+      <td>${formatDate(s.date)}</td>
+      <td class="mono" style="font-weight:500;color:var(--green)">${s.invoice}</td>
+      <td style="font-weight:500">${s.customer}</td>
+      <td style="color:var(--text-3)">${s.phone||'—'}</td>
+      <td>${s.items.length} আইটেম</td>
+      <td class="mono" style="font-weight:600">৳${fmt(s.total)}</td>
+      <td style="color:var(--text-3)">▼ দেখুন</td>
+    </tr>
+    <tr class="sale-row-detail" id="detail-${s.id}">
+      <td colspan="7">
+        <div class="sale-detail-inner">
+          <table style="width:100%;font-size:12px">
+            <thead><tr><th>পণ্য</th><th>পরিমাণ</th><th>একক মূল্য</th><th>মোট</th></tr></thead>
+            <tbody>${s.items.map(i=>`<tr><td>${i.name}</td><td>${i.qty} ${i.unit||'পিস'}</td><td class="mono">৳${fmt(i.price)}</td><td class="mono" style="font-weight:600">৳${fmt(i.total)}</td></tr>`).join('')}</tbody>
+          </table>
+          ${s.note ? `<div style="margin-top:8px;font-size:12px;color:var(--text-3)">নোট: ${s.note}</div>` : ''}
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function toggleSaleDetail(id) {
+  const el = document.getElementById('detail-' + id);
+  if (el) el.classList.toggle('open');
+}
+
+function filterSales() { renderSalesHistory(); }
+
+// ============================================================
+// CASH BOOK
+// ============================================================
+function renderCashBook() {
+  const tbody = document.getElementById('cash-tbody');
+  const income = DB.cashbook.filter(c => c.type === 'income').reduce((a,c) => a + (c.amount||0), 0);
+  const expense = DB.cashbook.filter(c => c.type === 'expense').reduce((a,c) => a + (c.amount||0), 0);
+  document.getElementById('cash-income').textContent = '৳' + fmt(income);
+  document.getElementById('cash-expense').textContent = '৳' + fmt(expense);
+  const balance = income - expense;
+  const balEl = document.getElementById('cash-balance');
+  balEl.textContent = '৳' + fmt(Math.abs(balance));
+  balEl.style.color = balance >= 0 ? 'var(--green)' : 'var(--red)';
+
+  const entries = [...DB.cashbook].reverse();
+  if (entries.length === 0) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">কোনো এন্ট্রি নেই</div></div></td></tr>'; return; }
+  tbody.innerHTML = entries.map(c => `
+    <tr>
+      <td>${formatDate(c.date)}</td>
+      <td style="font-weight:500">${c.desc}</td>
+      <td><span class="badge ${c.type==='income'?'badge-green':'badge-red'}">${c.type==='income'?'⬆ আয়':'⬇ ব্যয়'}</span></td>
+      <td class="mono" style="font-weight:600;color:${c.type==='income'?'var(--green)':'var(--red)'}">৳${fmt(c.amount)}</td>
+      <td style="color:var(--text-3)">${c.source||'—'}</td>
+      <td><button class="btn btn-danger btn-sm" onclick="deleteCash('${c.id}')">🗑️</button></td>
+    </tr>`).join('');
+}
+
+function openCashModal() {
+  cashType = 'income';
+  document.getElementById('tab-income').className = 'tab-btn active-green';
+  document.getElementById('tab-expense').className = 'tab-btn';
+  document.getElementById('cash-date').value = new Date().toISOString().split('T')[0];
+  ['cash-desc','cash-amount','cash-source'].forEach(id => document.getElementById(id).value = '');
+  openModal('modal-cash');
+}
+
+function setCashType(type) {
+  cashType = type;
+  document.getElementById('tab-income').className = type === 'income' ? 'tab-btn active-green' : 'tab-btn';
+  document.getElementById('tab-expense').className = type === 'expense' ? 'tab-btn active-red' : 'tab-btn';
+}
+
+async function saveCashEntry() {
+  const desc = document.getElementById('cash-desc').value.trim();
+  const amount = parseFloat(document.getElementById('cash-amount').value);
+  if (!desc || isNaN(amount) || amount <= 0) { toast('বিবরণ ও পরিমাণ দিন', 'error'); return; }
+  DB.cashbook.push({ id: 'CASH-' + Date.now(), type: cashType, desc, amount, source: document.getElementById('cash-source').value, date: document.getElementById('cash-date').value || new Date().toISOString() });
+  await saveToGitHub('cashbook');
+  closeModal('modal-cash');
+  renderCashBook();
+  toast('✅ Cash entry সেভ হয়েছে', 'success');
+}
+
+function deleteCash(id) {
+  showConfirm('Entry মুছুন', 'এই entry টি মুছে ফেলা হবে। নিশ্চিত?', async () => {
+    DB.cashbook = DB.cashbook.filter(c => c.id !== id);
+    await saveToGitHub('cashbook');
+    renderCashBook();
+    toast('Entry মুছে ফেলা হয়েছে', 'info');
+  });
+}
+
+// ============================================================
+// SETUP
+// ============================================================
+async function saveConfig() {
+  CONFIG.username = document.getElementById('cfg-username').value.trim();
+  CONFIG.repo = document.getElementById('cfg-repo').value.trim();
+  CONFIG.token = document.getElementById('cfg-token').value.trim();
+  if (!CONFIG.username || !CONFIG.repo || !CONFIG.token) { toast('সব তথ্য দিন', 'error'); return; }
+  localStorage.setItem('agrotech_cfg', JSON.stringify(CONFIG));
+  document.getElementById('setup-status').innerHTML = '<span style="color:var(--amber)">⏳ সংযোগ হচ্ছে...</span>';
+  try {
+    await initializeRepo();
+    await loadFromGitHub();
+    document.getElementById('setup-status').innerHTML = '<span style="color:var(--green)">✅ সফলভাবে সংযুক্ত হয়েছে!</span>';
+    updateStatus(true);
+  } catch(e) {
+    document.getElementById('setup-status').innerHTML = '<span style="color:var(--red)">❌ সংযোগ ব্যর্থ: ' + e.message + '</span>';
+    updateStatus(false);
+  }
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmt(n) { return Number(n||0).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 }); }
+function formatDate(d) { if (!d) return '—'; return new Date(d).toLocaleDateString('bn-BD', { day:'2-digit', month:'short', year:'numeric' }); }
+function catLabel(c) { const m = { incubator:'Incubator', seed:'বীজ', fertilizer:'সার', pesticide:'কীটনাশক', equipment:'যন্ত্রপাতি', other:'অন্যান্য' }; return m[c]||c||'অন্যান্য'; }
+function updateStatus(ok) {
+  document.getElementById('statusDot').className = 'status-dot' + (ok ? ' connected' : '');
+  document.getElementById('statusText').textContent = ok ? 'GitHub connected' : 'Not connected';
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function toast(msg, type = 'info') {
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+function showConfirm(title, msg, onYes) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  document.getElementById('confirm-overlay').classList.add('open');
+  document.getElementById('confirm-yes').onclick = () => { closeConfirm(); onYes(); };
+}
+function closeConfirm() { document.getElementById('confirm-overlay').classList.remove('open'); }
+function syncData() { loadFromGitHub(); }
+function refreshAllViews() { renderDashboard(); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(el => {
+  el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+});
+document.getElementById('confirm-overlay').addEventListener('click', e => { if (e.target.id === 'confirm-overlay') closeConfirm(); });
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('DOMContentLoaded', () => {
+  loadLocal();
+  if (CONFIG.username && CONFIG.repo && CONFIG.token) {
+    document.getElementById('cfg-username').value = CONFIG.username;
+    document.getElementById('cfg-repo').value = CONFIG.repo;
+    document.getElementById('cfg-token').value = CONFIG.token;
+    loadFromGitHub();
+  }
+  renderDashboard();
+});
+</script>
+</body>
+</html>
